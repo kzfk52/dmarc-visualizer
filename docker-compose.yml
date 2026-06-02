@@ -20,6 +20,13 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      # Cap the JVM heap. By default ES grabs ~50% of host RAM, which is
+      # far more than this DMARC visualizer needs.
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    deploy:
+      resources:
+        limits:
+          memory: 2g
     volumes:
       - elastic_data:/usr/share/elasticsearch/data
 
