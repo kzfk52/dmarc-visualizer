@@ -1,7 +1,15 @@
 
+# Cap log file growth: rotate at 10MB and keep at most 10 files per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "10"
+
 services:
   parsedmarc:
     build: ./parsedmarc/
+    logging: *default-logging
     volumes:
       - ./files:/input:ro
       - ./output_files:/output
@@ -17,6 +25,7 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.16.5
+    logging: *default-logging
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -32,6 +41,7 @@ services:
 
   grafana:
     build: ./grafana/
+    logging: *default-logging
     ports:
       - 13000:3000
     user: root
@@ -43,6 +53,7 @@ services:
     #profile:
     #  - dummy
     image: cloudflare/cloudflared:latest
+    logging: *default-logging
     command: tunnel --no-autoupdate run
     environment:
       # Tunnel token created in the Cloudflare Zero Trust dashboard.
