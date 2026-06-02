@@ -1,10 +1,16 @@
+
 services:
   parsedmarc:
     build: ./parsedmarc/
     volumes:
       - ./files:/input:ro
       - ./output_files:/output
-    command: parsedmarc -c /parsedmarc.ini /input/* --debug
+      - ./parsedmarc/parsedmarc.ini:/etc/parsedmarc/parsedmarc.ini
+      - ./credentials.json:/etc/parsedmarc/credentials.json
+      # Pre-generated token (generate_token.py). Mounted read-write so
+      # parsedmarc can refresh and write back the access token.
+      - ./token.json:/etc/parsedmarc/token.json
+    command: parsedmarc -c /etc/parsedmarc/parsedmarc.ini --debug
     depends_on:
       - elasticsearch
     restart: on-failure
