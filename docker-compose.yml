@@ -18,10 +18,27 @@ services:
       # Pre-generated token (generate_token.py). Mounted read-write so
       # parsedmarc can refresh and write back the access token.
       - ./token.json:/etc/parsedmarc/token.json
+      - geoip_data:/usr/share/GeoIP:ro
     command: parsedmarc -c /etc/parsedmarc/parsedmarc.ini --debug
     depends_on:
       - elasticsearch
+      - geoipupdate
     restart: on-failure
+
+  geoipupdate:
+    image: ghcr.io/maxmind/geoipupdate:latest
+    container_name: geoipupdate
+    restart: unless-stopped
+    environment:
+      - GEOIPUPDATE_ACCOUNT_ID=あなたのアカウントID
+      - GEOIPUPDATE_LICENSE_KEY=あなたのライセンスキー
+      # 無料のGeoLite2を指定。CityとCountryの両方（または片方）を指定
+      - GEOIPUPDATE_EDITION_IDS=GeoLite2-City GeoLite2-Country
+      # 自動更新の間隔（時間単位）。72時間（3日）ごとに自動チェック
+      - GEOIPUPDATE_FREQUENCY=72
+    volumes:
+      - geoip_data:/usr/share/GeoIP
+
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.16.5
@@ -65,5 +82,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  geoip_data:
+
   elastic_data:
     driver: local

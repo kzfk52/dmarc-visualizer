@@ -8,5 +8,7 @@ parsedmarc.ini
 credentials.json
 token.json
 
+GeoIP.conf
+
 # Secrets (Cloudflare Tunnel)
 .env
