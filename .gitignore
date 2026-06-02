@@ -7,3 +7,6 @@ parsedmarc.ini
 # Secrets (Gmail API)
 credentials.json
 token.json
+
+# Secrets (Cloudflare Tunnel)
+.env

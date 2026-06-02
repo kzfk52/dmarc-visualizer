@@ -39,6 +39,20 @@ services:
       GF_INSTALL_PLUGINS: grafana-piechart-panel,grafana-worldmap-panel
       GF_AUTH_ANONYMOUS_ENABLED: 'true'
 
+  cloudflared:
+    #profile:
+    #  - dummy
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      # Tunnel token created in the Cloudflare Zero Trust dashboard.
+      # Ingress routing is configured there (e.g. point a hostname to
+      # http://grafana:3000).
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      - grafana
+    restart: unless-stopped
+
 volumes:
   elastic_data:
     driver: local
