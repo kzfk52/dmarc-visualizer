@@ -30,8 +30,9 @@ services:
     container_name: geoipupdate
     restart: unless-stopped
     environment:
-      - GEOIPUPDATE_ACCOUNT_ID=あなたのアカウントID
-      - GEOIPUPDATE_LICENSE_KEY=あなたのライセンスキー
+      # MaxMind credentials are kept in .env (see .env.example).
+      - GEOIPUPDATE_ACCOUNT_ID=${GEOIPUPDATE_ACCOUNT_ID}
+      - GEOIPUPDATE_LICENSE_KEY=${GEOIPUPDATE_LICENSE_KEY}
       # 無料のGeoLite2を指定。CityとCountryの両方（または片方）を指定
       - GEOIPUPDATE_EDITION_IDS=GeoLite2-City GeoLite2-Country
       # 自動更新の間隔（時間単位）。72時間（3日）ごとに自動チェック
