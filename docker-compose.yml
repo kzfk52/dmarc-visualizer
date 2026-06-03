@@ -23,8 +23,10 @@ services:
       - geoip_data:/usr/share/GeoIP:ro
     command: parsedmarc -c /etc/parsedmarc/parsedmarc.ini --debug
     depends_on:
-      - elasticsearch
-      - geoipupdate
+      elasticsearch:
+        condition: service_healthy
+      geoipupdate:
+        condition: service_started
     restart: on-failure
 
   geoipupdate:
@@ -60,6 +62,17 @@ services:
           memory: 2g
     volumes:
       - elastic_data:/usr/share/elasticsearch/data
+    # Wait until the cluster answers and reports green/yellow status.
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s' | grep -q '\"status\":\"\\(green\\|yellow\\)\"'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 60s
 
   grafana:
     build: ./grafana/
