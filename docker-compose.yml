@@ -10,6 +10,8 @@ services:
   parsedmarc:
     build: ./parsedmarc/
     logging: *default-logging
+    environment:
+      - TZ=Asia/Tokyo
     volumes:
       - ./files:/input:ro
       - ./output_files:/output
@@ -30,6 +32,7 @@ services:
     container_name: geoipupdate
     restart: unless-stopped
     environment:
+      - TZ=Asia/Tokyo
       # MaxMind credentials are kept in .env (see .env.example).
       - GEOIPUPDATE_ACCOUNT_ID=${GEOIPUPDATE_ACCOUNT_ID}
       - GEOIPUPDATE_LICENSE_KEY=${GEOIPUPDATE_LICENSE_KEY}
@@ -45,6 +48,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.16.5
     logging: *default-logging
     environment:
+      - TZ=Asia/Tokyo
       - discovery.type=single-node
       - xpack.security.enabled=false
       # Cap the JVM heap. By default ES grabs ~50% of host RAM, which is
@@ -64,6 +68,7 @@ services:
       - 13000:3000
     user: root
     environment:
+      TZ: Asia/Tokyo
       GF_INSTALL_PLUGINS: grafana-piechart-panel,grafana-worldmap-panel
       GF_AUTH_ANONYMOUS_ENABLED: 'true'
 
